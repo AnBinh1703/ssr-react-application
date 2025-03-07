@@ -4,10 +4,10 @@ const App = () => {
   //state
   const [news, setNews] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-
+const [searchQuery, setSearchQuery] = React.useState("react");
   //fetching data from api
   const fetchData = () => {
-    fetch("http://hn.algolia.com/api/v1/search?query=react")
+    fetch(`http://hn.algolia.com/api/v1/search?query=${searchQuery}`)
       .then(result => result.json())
       .then(data => {
         setNews(data.hits);
@@ -19,16 +19,28 @@ const App = () => {
       });
   };
 
-  //useEffect
+const handleChange = (e) => {
+  setSearchQuery(e.target.value);
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  fetchData();
+};
+
   useEffect(() => {
     fetchData();
-  }, []); // Add empty dependency array to prevent infinite fetching
+  }, [searchQuery]); // Add searchQuery as dependency
 
   if (loading) return <div>Loading...</div>;
   
   return (
     <div>
       <h1>News</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" value={searchQuery} onChange={handleChange}/>
+        <button type="submit">Search</button>
+      </form>
       {news.map((n, i) => (
         <p key={i}>{n.title}</p>
       ))}
