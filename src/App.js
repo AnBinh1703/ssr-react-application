@@ -1,22 +1,59 @@
 import React, { useEffect } from "react";
-// version 4 wwith function componet and usseEffect property
+
 const App = () => {
-  const [count, setCount] = React.useState(0);
-  const increment = () => {
-    setCount(count + 1);
+  //state
+  const [news, setNews] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  //fetching data from api
+  const fetchData = () => {
+    fetch("http://hn.algolia.com/api/v1/search?query=react")
+      .then(result => result.json())
+      .then(data => {
+        setNews(data.hits);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+      });
   };
-  // useEffect is a hook that allows you to perform side effects in function components
-  // useEffect runs every time this is a change in the state of the component
+
+  //useEffect
   useEffect(() => {
-    document.title = `Clicked ${count} times with useEffect`;
-  });
+    fetchData();
+  }, []); // Add empty dependency array to prevent infinite fetching
+
+  if (loading) return <div>Loading...</div>;
+  
   return (
     <div>
-      <h1>Counter App</h1>
-      <button onClick={increment}>Clicked To Count {count}</button>
+      <h1>News</h1>
+      {news.map((n, i) => (
+        <p key={i}>{n.title}</p>
+      ))}
     </div>
   );
 };
+
+// version 4 wwith function componet and usseEffect property
+// const App = () => {
+//   const [count, setCount] = React.useState(0);
+//   const increment = () => {
+//     setCount(count + 1);
+//   };
+//   // useEffect is a hook that allows you to perform side effects in function components
+//   // useEffect runs every time this is a change in the state of the component
+//   useEffect(() => {
+//     document.title = `Clicked ${count} times with useEffect`;
+//   });
+//   return (
+//     <div>
+//       <h1>Counter App</h1>
+//       <button onClick={increment}>Clicked To Count {count}</button>
+//     </div>
+//   );
+// };
 
 //version 3 with class component
 // class App extends React.Component {
